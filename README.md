@@ -1,7 +1,6 @@
 ReplayJS
 ========
 
-**Library to automatically:**
 * Record end-users actions in a webpage and replay
 * Record manually navigated scenarios to generate automated test cases
 
