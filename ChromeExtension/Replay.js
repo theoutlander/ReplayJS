@@ -26,6 +26,7 @@ var r = (function () {
 
         console.log(mouseEvent.x);
         console.log(mouseEvent.y);
+        Commit();
     };
 
     var TrackKeyboard = function (keyboardEvent) {
@@ -36,6 +37,7 @@ var r = (function () {
             charCode: keyboardEvent.charCode
         };
         console.log(String.fromCharCode(keyboardEvent.charCode));
+        Commit();
     };
 
     var TrackHover = function (mouseEvent) {
@@ -47,6 +49,7 @@ var r = (function () {
             };
             console.log("Hover: " + mouseEvent.toElement.id);
         }, this.timeout);
+        Commit();
     };
 
     var Serialize = function () {
@@ -60,6 +63,11 @@ var r = (function () {
         itemCount = Object.keys(items).length;
     };
 
+    var Commit = function(){
+        Serialize();
+        Deserialize();
+    };
+
     Tracker.prototype.start = function ()  {        
         if (!_started) {
             Deserialize();
@@ -69,6 +77,8 @@ var r = (function () {
             document.addEventListener('hover', TrackHover);
 
             _started = true;
+
+            console.log('Recording Started....');
         }
     };
     
@@ -82,6 +92,8 @@ var r = (function () {
             Serialize();
 
             _started = false;
+
+            console.log('Recording Stopped....');
         }
     };
 
@@ -91,6 +103,9 @@ var r = (function () {
 
 
     Tracker.prototype.play = function () {
+
+        console.log('Replaying Recording....');
+
         this.stop();
         Deserialize();
         var selectedElement = null;
@@ -98,42 +113,42 @@ var r = (function () {
         RecursivePlay(items, 0, itemCount, selectedElement);
 
         /*
-		var selectedElement = null;
-		for(var i=0; i<itemCount; i++)
-		{
-			var item = items[i];
+        var selectedElement = null;
+        for(var i=0; i<itemCount; i++)
+        {
+            var item = items[i];
 
-			switch(item.type)
-			{
-				case 'mouse':
-					console.log("Click location: " + item.x, item.y);
-					selectedElement = document.getElementById(item.id);
+            switch(item.type)
+            {
+                case 'mouse':
+                    console.log("Click location: " + item.x, item.y);
+                    selectedElement = document.getElementById(item.id);
 
-					if(selectedElement!=null)
-					{
-						selectedElement.click();
-					}
+                    if(selectedElement!=null)
+                    {
+                        selectedElement.click();
+                    }
 
-					break;
-				case 'keyboard':
-					console.log("Entered " + String.fromCharCode(item.charCode) + " on " + selectedElement);
-					if(selectedElement!=null)
-					{
-						var e=document.createEvent("MouseEvent")
-						e.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-						selectedElement.dispatchEvent(e);
+                    break;
+                case 'keyboard':
+                    console.log("Entered " + String.fromCharCode(item.charCode) + " on " + selectedElement);
+                    if(selectedElement!=null)
+                    {
+                        var e=document.createEvent("MouseEvent")
+                        e.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                        selectedElement.dispatchEvent(e);
 
-						selectedElement.click();
-						selectedElement.value = selectedElement.value.concat(String.fromCharCode(item.charCode));
-					}
-					break;
-				case 'hover':
-					console.log("Hovered on " + item.id);
-					break;
-				default:
-					break;				
-			}
-		}*/
+                        selectedElement.click();
+                        selectedElement.value = selectedElement.value.concat(String.fromCharCode(item.charCode));
+                    }
+                    break;
+                case 'hover':
+                    console.log("Hovered on " + item.id);
+                    break;
+                default:
+                    break;              
+            }
+        }*/
     };
 
     var RecursivePlay = function (items, index, itemCount, selectedElement) {
@@ -152,8 +167,15 @@ var r = (function () {
 
                     break;
                 case 'keyboard':
-                    console.log("Entered " + String.fromCharCode(item.charCode) + " on " + selectedElement.id);
+
+                    if(selectedElement==null && item.id != null)
+                    {
+                        selectedElement = document.getElementById(item.id);
+                    }
+
                     if (selectedElement != null) {
+                        
+                        console.log("Entered " + String.fromCharCode(item.charCode) + " on " + selectedElement.id);
                         //var e=document.createEvent("MouseEvent")
                         //e.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
                         //selectedElement.dispatchEvent(e);
